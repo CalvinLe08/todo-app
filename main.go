@@ -8,23 +8,21 @@ import (
 )
 
 type TodoItem struct {
-	Id 			int 		`json:"id"`
-	Title 		string 	  	`json:"title"`
-	Description string		`json:"description"`
-	Status 		string 		`json:"status"`
-	CreatedAt 	time.Time 	`json:"created_at"`
-	UpdatedAt 	time.Time 	`json:"updated_at"`
+	Id          int       `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Status      string    `json:"status"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type TodoItemCreation struct {
-	Title 		string 	  	`json:"title"`
-	Description string		`json:"description"`
-	Status 		string 		`json:"status"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
 }
 
 func main() {
-	
-
 
 	r := gin.Default()
 
@@ -36,7 +34,7 @@ func main() {
 
 	v1 := r.Group("/api/v1")
 	{
-		items := v1.Group("/items") 
+		items := v1.Group("/items")
 		{
 			items.POST("", createItems)
 			items.GET("", getAllItems)
@@ -47,10 +45,10 @@ func main() {
 	}
 
 	r.Run("localhost:8000")
-} 
+}
 
 func createItems(c *gin.Context) {
-	var data TodoItemCreation 
+	var data TodoItemCreation
 
 	if err := c.ShouldBind(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -62,8 +60,7 @@ func createItems(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"data": data,
-	})	
-
+	})
 
 }
 
