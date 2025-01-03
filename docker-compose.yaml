@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15-alpine  
+    container_name: postgres_tododb
+    ports:
+      - "5435:5432"     
+    environment:
+      - ./.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data 
+
+volumes:
+  postgres_data:
