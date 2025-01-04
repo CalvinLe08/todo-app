@@ -1,25 +1,21 @@
 package main
 
 import (
+	"log"
 	"net/http"
-	"time"
 
+	"github.com/CalvinLe08/todo-app/initializers"
 	"github.com/gin-gonic/gin"
 )
 
-type TodoItem struct {
-	Id          int       `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Status      string    `json:"status"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-}
+func init() {
+	config, err := initializers.LoadConfig(".")
 
-type TodoItemCreation struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Status      string `json:"status"`
+	if err != nil {
+		log.Fatal("Could not load environment variables", err)
+	}
+
+	initializers.ConnectDB(&config)
 }
 
 func main() {

@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"log"
 
-	"gorm.io/gorm"
 	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-var db *gorm.DB
+var DB *gorm.DB
 
-func connectDB(config *Config) {
+func ConnectDB(config *Config) {
 	var err error
 
 	// https://gorm.io/docs/connecting_to_the_database.html#PostgreSQL 
@@ -29,7 +29,7 @@ func connectDB(config *Config) {
 		config.DBPort,
 	)
 	
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		log.Fatal("Failed to connect to database.")
