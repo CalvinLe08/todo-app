@@ -2,19 +2,21 @@ package models
 
 import (
 	"time"
+	
+	"github.com/google/uuid"
 )
 
-type TodoItem struct {
-	ID          int       `gorm:"primaryKey;autoIncrement" json:"id" form:"id"` 
-	Title       string    `gorm:"size:255;not null" json:"title" form:"title" binding:"required"` 
+type Item struct {
+	ID          uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	Title 		string `gorm:"size:255;not null;unique" json:"title" form:"title" binding:"required"`
 	Description string    `gorm:"type:text" json:"description" form:"description"` 
 	Status      string    `gorm:"size:50;not null;default:'pending'" json:"status" form:"status"` 
+	// UserID    uuid.UUID   `gorm:"not null" json:"user_id,omitempty"`
 	CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"` 
 	UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"` 
 }
 
-type TodoItemCreation struct {
+type ItemCreation struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
-	Status      string `json:"status"`
 }

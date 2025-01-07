@@ -5,13 +5,15 @@ import (
 )
 
 type Config struct {
+	// database
 	DBHost string `mapstructure:"POSTGRES_HOST"`
 	DBUser string `mapstructure:"POSTGRES_USER"`
 	DBPass string `mapstructure:"POSTGRES_PASSWORD"`
 	DBName string `mapstructure:"POSTGRES_DB"`
 	DBPort string `mapstructure:"POSTGRES_PORT"`
 	
-	ServerPort string `mapstructure:"PORT"`
+	// app
+	ServerPort string `mapstructure:"APP_PORT"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

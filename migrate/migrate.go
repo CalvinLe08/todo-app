@@ -1,7 +1,8 @@
-package migrate
+package main
 
 import (
 	"log"
+	"fmt"
 
 	"github.com/CalvinLe08/todo-app/initializers"
 	"github.com/CalvinLe08/todo-app/models"
@@ -18,8 +19,7 @@ func init() {
 }
 
 func main() {
-	initializers.DB.AutoMigrate(&models.TodoItem{})
+	initializers.DB.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
+	initializers.DB.AutoMigrate(&models.Item{}, &models.User{})
+	fmt.Println("👍 Migration complete")
 }
-
-
-

@@ -4,8 +4,21 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/CalvinLe08/todo-app/controllers"
+	"github.com/gin-contrib/cors"
 	"github.com/CalvinLe08/todo-app/initializers"
+	"github.com/CalvinLe08/todo-app/routes"
 	"github.com/gin-gonic/gin"
+)
+
+var (
+	server *gin.Engine
+
+	AuthController controllers.AuthController
+	AuthRouteController routes.AuthRouteController
+
+	ItemController controllers.ItemController
+	ItemRouteController routes.ItemRouteController
 )
 
 func init() {
@@ -16,59 +29,39 @@ func init() {
 	}
 
 	initializers.ConnectDB(&config)
+
+	AuthController = controllers.NewAuthController(initializers.DB)
+	AuthRouteController = routes.NewAuthRouteController(AuthController) 
+
+	ItemController = controllers.NewItemController(initializers.DB)
+	ItemRouteController = routes.NewItemRouteController(ItemController)
+
+	server = gin.Default()
 }
 
 func main() {
+	config, err := initializers.LoadConfig(".")
+	if err != nil {
+		log.Fatal("🚀 Could not load environment variables", err)
+	}
 
-	r := gin.Default()
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string{"http://localhost:8000"}
+	corsConfig.AllowCredentials = true
 
-	r.GET("/ping", func(c *gin.Context) {
+	server.Use(cors.New(corsConfig))
+
+	router := server.Group("/api")
+	router.GET("/healthcheck", func(c *gin.Context) {
+		message := "Welcome to my to do app which is done by AI"
 		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
+			"message": message,
 		})
 	})
 
-	v1 := r.Group("/api/v1")
-	{
-		items := v1.Group("/items")
-		{
-			items.POST("", createItems)
-			items.GET("", getAllItems)
-			items.GET(":id", getItemById)
-			items.PATCH(":id", editItem)
-			items.DELETE(":id", deleteItem)
-		}
-	}
-
-	r.Run("localhost:8000")
+	AuthRouteController.AuthRoute(router)
+	ItemRouteController.ItemRoute(router)
+	
+	log.Fatal(server.Run("localhost:" + config.ServerPort))
 }
 
-func createItems(c *gin.Context) {
-	var data TodoItemCreation
-
-	if err := c.ShouldBind(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-
-		return
-	}
-
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"data": data,
-	})
-
-}
-
-func getAllItems(c *gin.Context) {
-	return
-}
-func getItemById(c *gin.Context) {
-	return
-}
-func editItem(c *gin.Context) {
-	return
-}
-func deleteItem(c *gin.Context) {
-	return
-}
