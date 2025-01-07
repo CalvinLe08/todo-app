@@ -84,4 +84,10 @@ func (ac *AuthController) SignIn(c *gin.Context) {
 
 }
 
+func (ac *AuthController) RefreshToken(c *gin.Context) {
 
+}
+
+func (ac *AuthController) SignOut(c *gin.Context) {
+
+}

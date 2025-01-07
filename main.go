@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/CalvinLe08/todo-app/controllers"
-	"github.com/gin-contrib/cors"
 	"github.com/CalvinLe08/todo-app/initializers"
 	"github.com/CalvinLe08/todo-app/routes"
 	"github.com/gin-gonic/gin"
@@ -44,13 +43,7 @@ func main() {
 	if err != nil {
 		log.Fatal("🚀 Could not load environment variables", err)
 	}
-
-	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = []string{"http://localhost:8000"}
-	corsConfig.AllowCredentials = true
-
-	server.Use(cors.New(corsConfig))
-
+	
 	router := server.Group("/api")
 	router.GET("/healthcheck", func(c *gin.Context) {
 		message := "Welcome to my to do app which is done by AI"
