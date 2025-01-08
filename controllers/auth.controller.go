@@ -3,9 +3,10 @@ package controllers
 import (
 	"fmt"
 	"net/http"
-	"time"
 	"strings"
+	"time"
 
+	"github.com/CalvinLe08/todo-app/initializers"
 	"github.com/CalvinLe08/todo-app/models"
 	"github.com/CalvinLe08/todo-app/utils"
 	"github.com/gin-gonic/gin"
@@ -81,6 +82,45 @@ func (ac *AuthController) Register(c *gin.Context) {
 }
 
 func (ac *AuthController) SignIn(c *gin.Context) {
+	var SignInInput *models.SignInInput
+	
+	// Get Sign In input
+	if err := c.ShouldBindJSON(&SignInInput); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"status": "fail",
+			"message": err.Error(),
+		})
+
+		return
+	}
+
+	// Check db if user existed
+	var user models.User
+
+	result := ac.DB.First(&user, "email = ?", strings.ToLower(SignInInput.Email)) 
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "fail", 
+			"message": "Invalid email",
+		})
+		return
+	}
+
+	if err := utils.VerifyPassword(user.Password, SignInInput.Password); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "fail", 
+			"message": "Invalid Password",
+		})
+		return
+	}
+	
+	// Get token config
+	config, _ := initializers.LoadConfig(".")
+
+	// Generate tokens and return to users
+
+
+
 
 }
 
