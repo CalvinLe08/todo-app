@@ -86,7 +86,7 @@ func (ac *AuthController) SignIn(c *gin.Context) {
 	
 	// Get Sign In input
 	if err := c.ShouldBindJSON(&SignInInput); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H {
+		c.JSON(http.StatusBadRequest, gin.H {		
 			"status": "fail",
 			"message": err.Error(),
 		})
@@ -113,15 +113,23 @@ func (ac *AuthController) SignIn(c *gin.Context) {
 		})
 		return
 	}
-	
 	// Get token config
 	config, _ := initializers.LoadConfig(".")
 
 	// Generate tokens and return to users
+	access_token, err := utils.CreateToken(config.AccessTokenExpiresIn, user.ID, config.AccessTokenPrivate) 
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "fail",
+			"message": err.Error(),
+		})
+		return
+	}
 
-
-
-
+	c.JSON(http.StatusOK, gin.H{
+		"status": "logged in",
+		"access_token": access_token,
+	})
 }
 
 func (ac *AuthController) RefreshToken(c *gin.Context) {

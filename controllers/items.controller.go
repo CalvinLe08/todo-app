@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-	"strings"
 
 	"github.com/CalvinLe08/todo-app/models"
 	"github.com/gin-gonic/gin"
@@ -23,7 +22,7 @@ func NewItemController(DB *gorm.DB) ItemController {
 }
 
 func (ic *ItemController) CreateItems(c *gin.Context) {
-	// currentUser := c.MustGet("currentUser").(models.User)
+	currentUser := c.MustGet("currentUser").(models.User)
 
 	var payload *models.ItemCreation 
 
@@ -41,7 +40,7 @@ func (ic *ItemController) CreateItems(c *gin.Context) {
 		ID: uuid.New(),
 		Title: payload.Title,
 		Description: payload.Description,
-		// UserID: currentUser.ID,
+		UserID: currentUser.ID,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
@@ -49,10 +48,6 @@ func (ic *ItemController) CreateItems(c *gin.Context) {
 	result := ic.DB.Create(&newItem)
 
 	if result.Error != nil {
-		if strings.Contains(result.Error.Error(), "duplicate key") {
-			c.JSON(http.StatusConflict, gin.H{"status": "fail", "message": "Post with that title already exists"})
-			return
-		}
 		c.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
 		return
 	}

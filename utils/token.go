@@ -1,23 +1,14 @@
 package utils
 
 import (
-	"encoding/base64"
 	"fmt"
 	"time"
-
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func CreateToken(ttl time.Duration, payload interface{}, privateKey string) (token string, err error) {
-	decodedKey, err := base64.StdEncoding.DecodeString(privateKey)
-	if err != nil {
-		return  "", fmt.Errorf("Could not decode key, %w", err)
-	}
-
-	key, err := jwt.ParseRSAPrivateKeyFromPEM(decodedKey)
-	if err != nil {
-		return "", fmt.Errorf("create: parse key: %w", err)
-	}
+func CreateToken(ttl time.Duration, payload interface{}, secretKey string) (string, error) {
+	// Use the secret key directly instead of decoding a private key
+	key := []byte(secretKey) 
 
 	now := time.Now().UTC()
 
@@ -27,11 +18,41 @@ func CreateToken(ttl time.Duration, payload interface{}, privateKey string) (tok
 	claims["iat"] = now.Unix()
 	claims["nbf"] = now.Unix()
 
-	token, err = jwt.NewWithClaims(jwt.SigningMethodRS256, claims).SignedString(key)
+	// Create a new token using HMAC method
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
+	// Sign the token with the secret key
+	tokenString, err := token.SignedString(key)
 	if err != nil {
 		return "", fmt.Errorf("create: sign token: %w", err)
 	}
 
-	return token, nil
+	return tokenString, nil
+}
+
+func ValidateToken(token string, secretKey string) (interface{}, error) {
+	// Use the secret key directly instead of decoding a public key
+	key := []byte(secretKey)
+
+	// Parse the token with the secret key
+	parsedToken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+		// Ensure the token is using the expected signing method
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected method: %s", t.Header["alg"])
+		}
+		return key, nil
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("validate: %w", err)
+	}
+
+	// Extract claims from the parsed token
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok || !parsedToken.Valid {
+		return nil, fmt.Errorf("validate: invalid token")
+	}
+
+	// Return the payload (sub)
+	return claims["sub"], nil
 }
