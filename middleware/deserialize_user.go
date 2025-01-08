@@ -33,13 +33,14 @@ func DeserializeUSer() gin.HandlerFunc {
 		}
 
 		access_token := fields[1] 
-		if access_token == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"status": "fail",
-				"error": "access token is required",
-			})
-			return
-		}
+
+		// if access_token == "" {
+		// 	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+		// 		"status": "fail",
+		// 		"error": "access token is required",
+		// 	})
+		// 	return
+		// }
 
 		config, _ := initializers.LoadConfig(".")
 

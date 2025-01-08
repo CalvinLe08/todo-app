@@ -31,12 +31,10 @@ func CreateToken(ttl time.Duration, payload interface{}, secretKey string) (stri
 }
 
 func ValidateToken(token string, secretKey string) (interface{}, error) {
-	// Use the secret key directly instead of decoding a public key
 	key := []byte(secretKey)
 
 	// Parse the token with the secret key
 	parsedToken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
-		// Ensure the token is using the expected signing method
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected method: %s", t.Header["alg"])
 		}

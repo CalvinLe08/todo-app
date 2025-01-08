@@ -101,7 +101,7 @@ func (ac *AuthController) SignIn(c *gin.Context) {
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "fail", 
-			"message": "Invalid email",
+			"message": "Invalid email or password",
 		})
 		return
 	}
@@ -109,7 +109,7 @@ func (ac *AuthController) SignIn(c *gin.Context) {
 	if err := utils.VerifyPassword(user.Password, SignInInput.Password); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "fail", 
-			"message": "Invalid Password",
+			"message": "Invalid email or password",
 		})
 		return
 	}

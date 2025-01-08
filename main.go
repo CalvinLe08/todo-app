@@ -46,7 +46,7 @@ func main() {
 	
 	router := server.Group("/api")
 	router.GET("/healthcheck", func(c *gin.Context) {
-		message := "Welcome to my to do app which is done by AI"
+		message := "Welcome to my todo app which is done by AI"
 		c.JSON(http.StatusOK, gin.H{
 			"message": message,
 		})
