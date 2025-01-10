@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/CalvinLe08/todo-app/initializers"
-	"github.com/CalvinLe08/todo-app/models"
-	"github.com/CalvinLe08/todo-app/utils"
+	"github.com/calvinnle/todo-app/initializers"
+	"github.com/calvinnle/todo-app/models"
+	"github.com/calvinnle/todo-app/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm"

@@ -1,4 +1,4 @@
-module github.com/CalvinLe08/todo-app
+module github.com/calvinnle/todo-app
 
 go 1.23.3
 

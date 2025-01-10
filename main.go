@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/CalvinLe08/todo-app/controllers"
-	"github.com/CalvinLe08/todo-app/initializers"
-	"github.com/CalvinLe08/todo-app/routes"
+	"github.com/calvinnle/todo-app/controllers"
+	"github.com/calvinnle/todo-app/initializers"
+	"github.com/calvinnle/todo-app/routes"
 	"github.com/gin-gonic/gin"
 )
 

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/CalvinLe08/todo-app/models"
+	"github.com/calvinnle/todo-app/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm"

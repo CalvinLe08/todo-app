@@ -4,8 +4,8 @@ import (
 	"log"
 	"fmt"
 
-	"github.com/CalvinLe08/todo-app/initializers"
-	"github.com/CalvinLe08/todo-app/models"
+	"github.com/calvinnle/todo-app/initializers"
+	"github.com/calvinnle/todo-app/models"
 )
 
 func init() {

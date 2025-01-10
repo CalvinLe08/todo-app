@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"github.com/CalvinLe08/todo-app/controllers"
-	"github.com/CalvinLe08/todo-app/middleware"
+	"github.com/calvinnle/todo-app/controllers"
+	"github.com/calvinnle/todo-app/middleware"
 	"github.com/gin-gonic/gin"
 )
 

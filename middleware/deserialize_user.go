@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/CalvinLe08/todo-app/initializers"
-	"github.com/CalvinLe08/todo-app/utils"
-	"github.com/CalvinLe08/todo-app/models"
+	"github.com/calvinnle/todo-app/initializers"
+	"github.com/calvinnle/todo-app/utils"
+	"github.com/calvinnle/todo-app/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,7 +33,9 @@ func DeserializeUSer() gin.HandlerFunc {
 		}
 
 		access_token := fields[1] 
+		
 
+		// cant reach to this issue
 		// if access_token == "" {
 		// 	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 		// 		"status": "fail",
