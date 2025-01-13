@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/calvinnle/todo-app/controllers"
+	"github.com/calvinnle/todo-app/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,7 +18,7 @@ func (rc *AuthRouteController) AuthRoute(rg *gin.RouterGroup) {
 	router := rg.Group("auth")
 
 	router.POST("register", rc.authController.Register)
-	router.POST("sign-in", rc.authController.SignIn)
-	router.POST("refresh-token", rc.authController.RefreshToken)
-	router.POST("sign-out", rc.authController.SignOut)
+	router.POST("login", rc.authController.LogIn)
+	router.POST("refresh", rc.authController.Refresh)
+	router.POST("logout", middleware.DeserializeUSer(), rc.authController.LogOut)
 }

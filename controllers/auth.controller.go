@@ -87,7 +87,7 @@ func (ac *AuthController) Register(c *gin.Context) {
 	})
 }
 
-func (ac *AuthController) SignIn(c *gin.Context) {
+func (ac *AuthController) LogIn(c *gin.Context) {
 	var SignInInput *models.SignInInput
 	
 	// Get Sign In input
@@ -147,10 +147,67 @@ func (ac *AuthController) SignIn(c *gin.Context) {
 	})
 }
 
-func (ac *AuthController) RefreshToken(c *gin.Context) {
-	
+func (ac *AuthController) Refresh(c *gin.Context) {
+	var requestBody struct {
+		RefreshToken string `json:"refresh_token" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "Refresh token is required"})
+		return
+	}
+
+	refreshToken := requestBody.RefreshToken
+
+	// Token validation and user lookup
+	config, _ := initializers.LoadConfig(".")
+
+	sub, err := utils.ValidateToken(refreshToken, config.RefreshTokenPrivate)
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{
+			"status": "fail",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	var user models.User
+	if result := ac.DB.First(&user, "id = ?", sub); result.Error != nil {
+		c.JSON(http.StatusForbidden, gin.H{
+			"status": "fail",
+			"message": "User no longer exists",
+		})
+		return
+	}
+
+	// Generate new tokens
+	access_token, err := utils.CreateToken(config.AccessTokenExpiresIn, user.ID, config.AccessTokenPrivate)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": "fail", 
+			"message": "Could not create access token",
+		})
+		return
+	}
+
+	// Create new refresh token
+	refresh_token, err := utils.CreateToken(config.RefreshTokenExpiresIn, user.ID, config.RefreshTokenPrivate)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": "fail", 
+			"message": "Could not create refresh token",
+		})
+		return
+	}
+
+	// Send new tokens in response
+	c.JSON(http.StatusOK, gin.H{
+		"status":        "success",
+		"access_token":  access_token,
+		"refresh_token": refresh_token,
+	})
 }
 
-func (ac *AuthController) SignOut(c *gin.Context) {
+func (ac *AuthController) LogOut(c *gin.Context) {
 
 }
