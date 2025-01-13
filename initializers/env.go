@@ -26,6 +26,11 @@ type Config struct {
 	RefreshTokenPrivate string `mapstructure:"REFRESH_TOKEN_PRIVATE_KEY"`
 	RefreshTokenPublic string `mapstructure:"REFRESH_TOKEN_PUBLIC_KEY"`
 	RefreshTokenExpiresIn time.Duration `mapstructure:"REFRESH_TOKEN_EXPIRED_IN"`
+
+	// Redis
+	RedisPort string `mapstructure:"REDIS_PORT"`
+	RedisHost string `mapstructure:"REDIS_HOST"`
+	RedisPass string `mapstructure:"REDIS_PASSWORD"` 
 }
 
 func LoadConfig(path string) (config Config, err error) {

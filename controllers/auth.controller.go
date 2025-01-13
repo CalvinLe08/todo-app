@@ -68,10 +68,16 @@ func (ac *AuthController) Register(c *gin.Context) {
 
 	if result.Error != nil {
 		if strings.Contains(result.Error.Error(), "duplicate key") {
-			c.JSON(http.StatusConflict, gin.H{"status": "fail", "message": "User already exists"})
+			c.JSON(http.StatusConflict, gin.H{
+				"status": "fail", 
+				"message": "User already exists",
+			})
 			return
 		}
-		c.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
+		c.JSON(http.StatusBadGateway, gin.H{
+			"status": "error", 
+			"message": result.Error.Error(),
+		})
 		return
 	}
 
@@ -90,7 +96,6 @@ func (ac *AuthController) SignIn(c *gin.Context) {
 			"status": "fail",
 			"message": err.Error(),
 		})
-
 		return
 	}
 
@@ -126,14 +131,24 @@ func (ac *AuthController) SignIn(c *gin.Context) {
 		return
 	}
 
+	refresh_token, err := utils.CreateToken(config.RefreshTokenExpiresIn, user.ID, config.AccessTokenPrivate) 
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "fail",
+			"message": err.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"status": "logged in",
 		"access_token": access_token,
+		"refresh_token": refresh_token,
 	})
 }
 
 func (ac *AuthController) RefreshToken(c *gin.Context) {
-		
+	
 }
 
 func (ac *AuthController) SignOut(c *gin.Context) {
