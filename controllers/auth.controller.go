@@ -10,17 +10,20 @@ import (
 	"github.com/calvinnle/todo-app/models"
 	"github.com/calvinnle/todo-app/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type AuthController struct {
-	DB *gorm.DB
+	DB    *gorm.DB
+	Redis *redis.Client
 }
 
-func NewAuthController(DB *gorm.DB) AuthController {
-	return AuthController {
-		DB: DB,
+func NewAuthController(DB *gorm.DB, Redis *redis.Client) AuthController {
+	return AuthController{
+		DB:    DB,
+		Redis: Redis,
 	}
 }
 
@@ -34,7 +37,7 @@ func (ac *AuthController) Register(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	if registerInfo.Password != registerInfo.PasswordConfirm {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "fail",
@@ -42,7 +45,7 @@ func (ac *AuthController) Register(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	hashedPassword, err := utils.HashPassword(registerInfo.Password)
 	if err != nil {
 		c.JSON(http.StatusBadGateway, gin.H {
@@ -89,7 +92,7 @@ func (ac *AuthController) Register(c *gin.Context) {
 
 func (ac *AuthController) LogIn(c *gin.Context) {
 	var SignInInput *models.SignInInput
-	
+
 	// Get Sign In input
 	if err := c.ShouldBindJSON(&SignInInput); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {		
@@ -153,15 +156,19 @@ func (ac *AuthController) Refresh(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "Refresh token is required"})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "fail",
+			"message": "Refresh token is required",
+		})
 		return
 	}
 
 	refreshToken := requestBody.RefreshToken
 
-	// Token validation and user lookup
+	// Load configuration
 	config, _ := initializers.LoadConfig(".")
 
+	// Validate the refresh token
 	sub, err := utils.ValidateToken(refreshToken, config.RefreshTokenPrivate)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{
@@ -171,6 +178,14 @@ func (ac *AuthController) Refresh(c *gin.Context) {
 		return
 	}
 
+	// Check if token is blacklisted
+	isBlacklisted,err := utils.IsTokenBlacklisted(refreshToken, ac.Redis)
+	if isBlacklisted {
+		c.JSON(http.StatusUnauthorized, gin.H{"status": "fail", "message": "Invalid token, please log in again"})
+		return
+	}
+
+	// Lookup the user in the database
 	var user models.User
 	if result := ac.DB.First(&user, "id = ?", sub); result.Error != nil {
 		c.JSON(http.StatusForbidden, gin.H{
@@ -180,23 +195,19 @@ func (ac *AuthController) Refresh(c *gin.Context) {
 		return
 	}
 
+	// Blacklist the old refresh token
+	utils.BlacklistToken(refreshToken, ac.Redis, config.RefreshTokenExpiresIn)
+
 	// Generate new tokens
 	access_token, err := utils.CreateToken(config.AccessTokenExpiresIn, user.ID, config.AccessTokenPrivate)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status": "fail", 
-			"message": "Could not create access token",
-		})
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "fail", "message": "Could not create access token"})
 		return
 	}
 
-	// Create new refresh token
 	refresh_token, err := utils.CreateToken(config.RefreshTokenExpiresIn, user.ID, config.RefreshTokenPrivate)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status": "fail", 
-			"message": "Could not create refresh token",
-		})
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "fail", "message": "Could not create refresh token"})
 		return
 	}
 

@@ -28,8 +28,9 @@ func init() {
 	}
 
 	initializers.ConnectDB(&config)
+	initializers.ConnectRedis(&config)
 
-	AuthController = controllers.NewAuthController(initializers.DB)
+	AuthController = controllers.NewAuthController(initializers.DB, initializers.RedisClient)
 	AuthRouteController = routes.NewAuthRouteController(AuthController) 
 
 	ItemController = controllers.NewItemController(initializers.DB)

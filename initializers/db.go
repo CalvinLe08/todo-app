@@ -35,5 +35,5 @@ func ConnectDB(config *Config) {
 		log.Fatal("Failed to connect to database.")
 	}
 
-	fmt.Println("Successfully connected to database")
+	fmt.Println("✔ Successfully connected to Redis client.")
 }
