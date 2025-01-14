@@ -18,5 +18,6 @@ func (rc *ItemRouteController) ItemRoute(rg *gin.RouterGroup) {
 	router := rg.Group("items")
 
 	router.POST("", middleware.DeserializeUSer(),rc.ItemController.CreateItems)
+	router.POST(":item_id/finish", middleware.DeserializeUSer(),rc.ItemController.Finish)
 }
 

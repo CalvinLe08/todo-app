@@ -46,6 +46,15 @@ func (ac *AuthController) Register(c *gin.Context) {
 		return
 	}
 
+
+	if err := utils.ValidateEmail(registerInfo.Email); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
+			"message": "Invalid email",
+		})
+		return
+	}
+
 	if registerInfo.Password != registerInfo.PasswordConfirm {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "fail",

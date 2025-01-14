@@ -22,6 +22,9 @@ var (
 
 	ItemController controllers.ItemController
 	ItemRouteController routes.ItemRouteController
+
+	UserController controllers.UserController
+	UserRouteController routes.UserRouteController
 )
 
 func init() {
@@ -40,6 +43,9 @@ func init() {
 
 	ItemController = controllers.NewItemController(initializers.DB)
 	ItemRouteController = routes.NewItemRouteController(ItemController)
+
+	UserController = controllers.NewUserController(initializers.DB, initializers.MinioClient)
+	UserRouteController = routes.NewUserRouteController(UserController)
 
 	server = gin.Default()
 }
@@ -62,6 +68,7 @@ func main() {
 
 	AuthRouteController.AuthRoute(router)
 	ItemRouteController.ItemRoute(router)
+	UserRouteController.UserRoute(router)
 	
 	log.Fatal(server.Run("localhost:" + config.ServerPort))
 }

@@ -28,3 +28,9 @@ type SignInInput struct {
 	Email    string `json:"email"  binding:"required"`
 	Password string `json:"password"  binding:"required"`
 }
+
+type UpdateUserInput struct {
+	Name            string `json:"name"`
+	Age             int    `json:"age"`
+}
+
