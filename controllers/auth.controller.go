@@ -93,7 +93,6 @@ func (ac *AuthController) Register(c *gin.Context) {
 func (ac *AuthController) LogIn(c *gin.Context) {
 	var SignInInput *models.SignInInput
 
-	// Get Sign In input
 	if err := c.ShouldBindJSON(&SignInInput); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {		
 			"status": "fail",
@@ -220,52 +219,51 @@ func (ac *AuthController) Refresh(c *gin.Context) {
 }
 
 func (ac *AuthController) LogOut(c *gin.Context) {
-	user, exists := c.Get("currentUser")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"status": "fail",
-			"message": "User not authenticated",
-		})
-		return
+	var requestBody struct {
+		RefreshToken string `json:"refresh_token" binding:"required"`
 	}
 
-	// Cast user data to actual User model
-	currentUser := user.(models.User)
-
-	// Check if user exists in DB
-	var dbUser models.User
-	result := initializers.DB.First(&dbUser, "id = ?", currentUser.ID)
-	if result.Error != nil {
-		c.JSON(http.StatusForbidden, gin.H{
-			"status": "fail",
-			"message": "User no longer exists",
-		})
-		return
-	}
-
-	// Blacklist the refresh token (assuming it's stored in the request or passed as a parameter)
-	refreshToken := c.GetHeader("Authorization")
-	if refreshToken == "" {
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "fail",
+			"status":  "fail",
 			"message": "Refresh token is required for logout",
 		})
 		return
 	}
 
-	refreshToken = strings.TrimPrefix(refreshToken, "Bearer ")
-
-	err := utils.BlacklistToken(refreshToken, initializers.RedisClient, time.Hour*24)  
+	user, exists := c.Get("currentUser")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status":  "fail",
+			"message": "User not authenticated",
+		})
+		return
+	}
+	
+	// Check if user existed
+	currentUser := user.(models.User)
+	var dbUser models.User
+	result := initializers.DB.First(&dbUser, "id = ?", currentUser.ID)
+	if result.Error != nil {
+		c.JSON(http.StatusForbidden, gin.H{
+			"status":  "fail",
+			"message": "User no longer exists",
+		})
+		return
+	}
+	
+	// Blacklist
+	err := utils.BlacklistToken(requestBody.RefreshToken, initializers.RedisClient, time.Hour*24)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"status": "fail",
+			"status":  "fail",
 			"message": "Failed to blacklist refresh token",
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": "success",
+		"status":  "success",
 		"message": "Logged out successfully",
 	})
 }
