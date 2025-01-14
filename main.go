@@ -8,6 +8,10 @@ import (
 	"github.com/calvinnle/todo-app/initializers"
 	"github.com/calvinnle/todo-app/routes"
 	"github.com/gin-gonic/gin"
+
+	docs "github.com/calvinnle/docs"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 var (
