@@ -23,12 +23,14 @@ func IsTokenBlacklisted(token string, redisClient *redis.Client) (bool, error) {
 	ctx := context.Background()
 
 	val, err := redisClient.Get(ctx, token).Result()
+
+	// Token is not blacklisted
 	if err == redis.Nil {
-		// Token is not blacklisted
 		return false, nil
 	}
+
+	// Redis query error
 	if err != nil {
-		// Redis query error
 		return false, fmt.Errorf("failed to check blacklist status: %w", err)
 	}
 
