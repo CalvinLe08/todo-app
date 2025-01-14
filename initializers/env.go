@@ -31,6 +31,17 @@ type Config struct {
 	RedisPort string `mapstructure:"REDIS_PORT"`
 	RedisHost string `mapstructure:"REDIS_HOST"`
 	RedisPass string `mapstructure:"REDIS_PASSWORD"` 
+
+	// MinIO
+	MinioEndpoint     	string `mapstructure:"MINIO_ENDPOINT"` 
+	MinioRootUser     	string `mapstructure:"MINIO_ROOT_USER"`
+	MinioRootPassword 	string `mapstructure:"MINIO_ROOT_PASSWORD"`
+	MinioAccessKey    	string `mapstructure:"MINIO_ACCESS_KEY"`
+	MinioSecretKey    	string `mapstructure:"MINIO_SECRET_KEY"`
+	AwsAccessKeyId    	string `mapstructure:"AWS_ACCESS_KEY_ID"`
+	AwsSecretAccessKey 	string `mapstructure:"AWS_SECRET_ACCESS_KEY"`
+	AwsRegion         	string `mapstructure:"AWS_REGION"`
+	
 }
 
 func LoadConfig(path string) (config Config, err error) {

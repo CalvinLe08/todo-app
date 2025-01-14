@@ -27,7 +27,6 @@ func NewAuthController(DB *gorm.DB, Redis *redis.Client) AuthController {
 	}
 }
 
-
 // Register
 //	@Summary		Register a new user
 //	@Description	Create a new user account with name, email, and password.

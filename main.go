@@ -33,6 +33,7 @@ func init() {
 
 	initializers.ConnectDB(&config)
 	initializers.ConnectRedis(&config)
+	initializers.ConnectMinio(&config)
 
 	AuthController = controllers.NewAuthController(initializers.DB, initializers.RedisClient)
 	AuthRouteController = routes.NewAuthRouteController(AuthController) 
