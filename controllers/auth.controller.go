@@ -29,17 +29,13 @@ func NewAuthController(DB *gorm.DB, Redis *redis.Client) AuthController {
 
 
 // Register
-// @Summary      Register a new user
-// @Description  Create a new user account with name, email, and password.
-// @Tags         Auth
-// @Accept       json
-// @Produce      json
-// @Param        registerInfo  body  models.RegisterInput  true  "User registration data"
-// @Success      201  {object}  map[string]interface{}  "User successfully created"
-// @Failure      400  {object}  map[string]interface{}  "Invalid input or validation error"
-// @Failure      409  {object}  map[string]interface{}  "User already exists"
-// @Failure      502  {object}  map[string]interface{}  "Server error"
-// @Router       /auth/register [post]
+//	@Summary		Register a new user
+//	@Description	Create a new user account with name, email, and password.
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			registerInfo	body		models.RegisterInput	true	"User registration data"
+//	@Router			/auth/register [post]
 func (ac *AuthController) Register(c *gin.Context) {
 	var registerInfo *models.RegisterInput
 

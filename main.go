@@ -9,7 +9,7 @@ import (
 	"github.com/calvinnle/todo-app/routes"
 	"github.com/gin-gonic/gin"
 
-	docs "github.com/calvinnle/docs"
+	docs "github.com/calvinnle/todo-app/docs"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -48,14 +48,16 @@ func main() {
 	if err != nil {
 		log.Fatal("🚀 Could not load environment variables", err)
 	}
-	
-	router := server.Group("/api")
+	docs.SwaggerInfo.BasePath = "/api/v1"
+	router := server.Group("/api/v1")
 	router.GET("/healthcheck", func(c *gin.Context) {
 		message := "Welcome to my todo app which is done by AI"
 		c.JSON(http.StatusOK, gin.H{
 			"message": message,
 		})
 	})
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
 
 	AuthRouteController.AuthRoute(router)
 	ItemRouteController.ItemRoute(router)
