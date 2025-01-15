@@ -19,5 +19,8 @@ func (rc *ItemRouteController) ItemRoute(rg *gin.RouterGroup) {
 
 	router.POST("", middleware.DeserializeUSer(),rc.ItemController.CreateItems)
 	router.POST(":item_id/finish", middleware.DeserializeUSer(),rc.ItemController.Finish)
+	router.POST(":item_id/unfinish", middleware.DeserializeUSer(),rc.ItemController.Unfinish)
+
+	router.GET("", middleware.DeserializeUSer(), rc.ItemController.GetAllItems)
 }
 

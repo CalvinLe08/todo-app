@@ -59,13 +59,12 @@ func (ic *ItemController) CreateItems(c *gin.Context) {
 }
 
 func (ic *ItemController) Finish(c *gin.Context) {
-	itemID := c.Param("item_id") 
+	item_id := c.Param("item_id") 
 
 	var item models.Item
 
-	result := ic.DB.First(&item, "id = ?", itemID)
+	result := ic.DB.First(&item, "id = ?", item_id)
 	if result.Error != nil {
-		// If item not found, return an error
 		c.JSON(http.StatusNotFound, gin.H{
 			"status":  "fail",
 			"message": "Item not found",
@@ -73,7 +72,10 @@ func (ic *ItemController) Finish(c *gin.Context) {
 		return
 	}
 
+	now := time.Now()
+
 	item.Status = "done" 
+	item.UpdatedAt = now
 
 	result = ic.DB.Save(&item)
 	if result.Error != nil {
@@ -86,6 +88,57 @@ func (ic *ItemController) Finish(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
-		"data": item, // Return the updated item details
+		"data": item, 
+	})
+}
+
+func (ic *ItemController) Unfinish(c *gin.Context) {
+	item_id := c.Param("item_id")
+
+	var item *models.Item
+
+	result := ic.DB.First(&item, "id = ?", item_id)
+	if result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H {
+			"status": "fail",
+			"message": "Item not found",
+		})
+		return
+	}
+
+	now := time.Now()
+
+	item.Status = "unfinished"
+	item.UpdatedAt = now
+
+	result = ic.DB.Save(&item)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "fail",
+			"message": "Unable to update item status",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data": item, 
+	})
+}
+
+func (ic *ItemController) GetAllItems(c *gin.Context) {
+	var items *[]models.Item
+
+	result := ic.DB.Find(&items)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": "fail",
+			"message": "Unable to get items.",
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data": items,
 	})
 }
