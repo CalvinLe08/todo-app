@@ -22,7 +22,7 @@ func ConnectRedis(config *Config) {
 		log.Fatal("Could not connect to Redis");
 	}
 
-	fmt.Println("✔ Successfully connected to database")
+	fmt.Println("✔ Successfully connected to Redis client.")
 }
 
 
