@@ -128,9 +128,10 @@ func (ic *ItemController) Unfinish(c *gin.Context) {
 
 func (ic *ItemController) GetAllItems(c *gin.Context) {
 	currentUser := c.MustGet("currentUser").(models.User)
+
 	var items *[]models.Item
 
-	result := ic.DB.Where("user_id <> ?", currentUser.ID).Find(&items)
+	result := ic.DB.Where("user_id = ?", currentUser.ID).Find(&items)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": "fail",
