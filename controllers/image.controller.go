@@ -28,7 +28,6 @@ const (
 func (ic *ImageController) PresignedURLGenerator(c *gin.Context) {
 	filename := c.Query("filename")
 
-	// Uncomment the line below and import models to get current user
 	currentUser := c.MustGet("currentUser").(models.User)
 
 	var requestBody struct {
@@ -49,6 +48,7 @@ func (ic *ImageController) PresignedURLGenerator(c *gin.Context) {
 	}
 
 	var path string
+
 	// define file type for each case
 	if requestBody.File_type == "avatar" {
 		path = fmt.Sprintf("users/%s/avatar/avatar.jpg", currentUser.ID)
@@ -63,8 +63,7 @@ func (ic *ImageController) PresignedURLGenerator(c *gin.Context) {
 	if err != nil {
 		log.Printf("Error generating presigned URL: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error":   err.Error(),
-			"details": "dcm ngu vkl",
+			"error": err.Error(),
 		})
 		return
 	}
