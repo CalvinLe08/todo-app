@@ -10,7 +10,6 @@ import (
 
 var MinioClient *minio.Client
 
-
 func ConnectMinio(config *Config) {
 	endpoint := config.MinioEndpoint
 	accessKeyID := config.MinioAccessKey
@@ -27,6 +26,6 @@ func ConnectMinio(config *Config) {
 	if err != nil {
 		log.Fatalln("Could not connect to MinIO")
 	}
-	
+
 	fmt.Println("✔ Successfully connected to Minio.")
 }

@@ -17,7 +17,7 @@ type ImageController struct {
 }
 
 func NewImageController(Minio *minio.Client) ImageController {
-	return ImageController{Minio};
+	return ImageController{Minio}
 }
 
 const (
@@ -27,7 +27,7 @@ const (
 // Gen presigned url
 func (ic *ImageController) PresignedURLGenerator(c *gin.Context) {
 	filename := c.Query("filename")
-	
+
 	// Uncomment the line below and import models to get current user
 	currentUser := c.MustGet("currentUser").(models.User)
 
@@ -37,7 +37,7 @@ func (ic *ImageController) PresignedURLGenerator(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "fail",
+			"status":  "fail",
 			"details": "Cannot get file-type",
 		})
 		return
@@ -47,7 +47,7 @@ func (ic *ImageController) PresignedURLGenerator(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "filename is required"})
 		return
 	}
-	
+
 	var path string
 	// define file type for each case
 	if requestBody.File_type == "avatar" {
@@ -62,12 +62,15 @@ func (ic *ImageController) PresignedURLGenerator(c *gin.Context) {
 	presignedURL, err := ic.Minio.PresignedPutObject(context.Background(), bucketName, path, time.Minute*15)
 	if err != nil {
 		log.Printf("Error generating presigned URL: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   err.Error(),
+			"details": "dcm ngu vkl",
+		})
 		return
 	}
 
 	log.Printf("Generated presigned URL for upload: %s", presignedURL.String())
 	c.JSON(http.StatusOK, gin.H{
-		"url":      presignedURL.String(),
+		"url": presignedURL.String(),
 	})
 }
