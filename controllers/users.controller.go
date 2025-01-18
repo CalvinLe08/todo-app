@@ -101,5 +101,3 @@ func (uc *UserController) UpdateProfile(c *gin.Context) {
 		},
 	})
 }
-
-

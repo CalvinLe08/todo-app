@@ -1,14 +1,15 @@
 package initializers
 
 import (
-	"log"
 	"fmt"
+	"log"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 var MinioClient *minio.Client
+
 
 func ConnectMinio(config *Config) {
 	endpoint := config.MinioEndpoint
@@ -17,15 +18,15 @@ func ConnectMinio(config *Config) {
 	useSSL := false
 
 	// Initialize minio client object.
-	minioClient, err := minio.New(endpoint, &minio.Options{
+	var err error
+	MinioClient, err = minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
 		Secure: useSSL,
 	})
 
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalln("Could not connect to MinIO")
 	}
 	
-	fmt.Println("✔ Successfully connected to Minio")
-	log.Printf("%#v\n", minioClient) // minioClient is now setup
+	fmt.Println("✔ Successfully connected to Minio.")
 }
