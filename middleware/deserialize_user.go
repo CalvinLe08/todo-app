@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/calvinnle/todo-app/initializers"
-	"github.com/calvinnle/todo-app/utils"
 	"github.com/calvinnle/todo-app/models"
+	"github.com/calvinnle/todo-app/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,22 +18,21 @@ func DeserializeUSer() gin.HandlerFunc {
 		if authorizationHeader == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"status": "fail",
-				"error": "authorization header is required",
+				"error":  "authorization header is required",
 			})
 			return
 		}
 
-		fields := strings.Fields(authorizationHeader) 
+		fields := strings.Fields(authorizationHeader)
 		if len(fields) != 2 || fields[0] != "Bearer" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"status": "fail",
-				"error": "invalid authorization header format, expected 'Bearer <token>'",
+				"error":  "invalid authorization header format, expected 'Bearer <token>'",
 			})
 			return
 		}
 
-		access_token := fields[1] 
-		
+		access_token := fields[1]
 
 		// cant reach to this issue
 		// if access_token == "" {
@@ -49,7 +48,7 @@ func DeserializeUSer() gin.HandlerFunc {
 		sub, err := utils.ValidateToken(access_token, config.AccessTokenPublic)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"status": "fail",
+				"status":  "fail",
 				"message": "Invalid or expired token",
 			})
 			return
@@ -59,13 +58,13 @@ func DeserializeUSer() gin.HandlerFunc {
 		result := initializers.DB.Select("id").First(&user, "id = ?", fmt.Sprint(sub))
 		if result.Error != nil {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
-				"status": "fail",
+				"status":  "fail",
 				"message": "User not found or no longer exists",
 			})
 			return
 		}
 
-		c.Set("currentUser", user) 
+		c.Set("currentUser", user)
 		c.Next()
 	}
 }

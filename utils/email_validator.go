@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"regexp"
 	"errors"
+	"regexp"
 )
 
 // ValidateEmail checks if the provided email is in valid format and is not already in use

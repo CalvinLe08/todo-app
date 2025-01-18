@@ -1,6 +1,5 @@
 package routes
 
-
 import (
 	"github.com/calvinnle/todo-app/controllers"
 	"github.com/calvinnle/todo-app/middleware"
@@ -16,7 +15,7 @@ func NewUserRouteController(userController controllers.UserController) UserRoute
 }
 
 func (uc *UserRouteController) UserRoute(rg *gin.RouterGroup) {
-		router := rg.Group("user")
+	router := rg.Group("user")
 
 	router.GET("profile", middleware.DeserializeUSer(), uc.userController.GetProfile)
 	router.PUT("profile", middleware.DeserializeUSer(), uc.userController.UpdateProfile)

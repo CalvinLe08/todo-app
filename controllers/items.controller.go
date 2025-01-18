@@ -16,7 +16,7 @@ type ItemController struct {
 }
 
 func NewItemController(DB *gorm.DB) ItemController {
-	return ItemController {
+	return ItemController{
 		DB: DB,
 	}
 }
@@ -24,25 +24,25 @@ func NewItemController(DB *gorm.DB) ItemController {
 func (ic *ItemController) CreateItems(c *gin.Context) {
 	currentUser := c.MustGet("currentUser").(models.User)
 
-	var payload *models.ItemCreation 
+	var payload *models.ItemCreation
 
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid input",
+			"error":   "Invalid input",
 			"details": fmt.Sprintf("Validation failed: %v", err),
 		})
 		return
 	}
 
-	now := time.Now();
+	now := time.Now()
 
 	newItem := &models.Item{
-		ID: uuid.New(),
-		Title: payload.Title,
+		ID:          uuid.New(),
+		Title:       payload.Title,
 		Description: payload.Description,
-		UserID: currentUser.ID,
-		CreatedAt: now,
-		UpdatedAt: now,
+		UserID:      currentUser.ID,
+		CreatedAt:   now,
+		UpdatedAt:   now,
 	}
 
 	result := ic.DB.Create(&newItem)
@@ -54,12 +54,12 @@ func (ic *ItemController) CreateItems(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "sucess",
-		"data": newItem,
+		"data":    newItem,
 	})
 }
 
 func (ic *ItemController) Finish(c *gin.Context) {
-	item_id := c.Param("item_id") 
+	item_id := c.Param("item_id")
 
 	var item models.Item
 
@@ -74,7 +74,7 @@ func (ic *ItemController) Finish(c *gin.Context) {
 
 	now := time.Now()
 
-	item.Status = "done" 
+	item.Status = "done"
 	item.UpdatedAt = now
 
 	result = ic.DB.Save(&item)
@@ -88,7 +88,7 @@ func (ic *ItemController) Finish(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
-		"data": item, 
+		"data":   item,
 	})
 }
 
@@ -99,8 +99,8 @@ func (ic *ItemController) Unfinish(c *gin.Context) {
 
 	result := ic.DB.First(&item, "id = ?", item_id)
 	if result.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H {
-			"status": "fail",
+		c.JSON(http.StatusNotFound, gin.H{
+			"status":  "fail",
 			"message": "Item not found",
 		})
 		return
@@ -122,7 +122,7 @@ func (ic *ItemController) Unfinish(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
-		"data": item, 
+		"data":   item,
 	})
 }
 
@@ -134,13 +134,13 @@ func (ic *ItemController) GetAllItems(c *gin.Context) {
 	result := ic.DB.Where("user_id = ?", currentUser.ID).Find(&items)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"status": "fail",
+			"status":  "fail",
 			"message": "Unable to get items.",
 		})
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
-		"data": items,
+		"data":   items,
 	})
 }

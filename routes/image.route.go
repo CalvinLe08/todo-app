@@ -12,7 +12,7 @@ type ImageRouteController struct {
 
 func NewImageRouteController(imageController controllers.ImageController) ImageRouteController {
 	return ImageRouteController{imageController}
-} 
+}
 
 func (ri *ImageRouteController) ImageRoute(rg *gin.RouterGroup) {
 	router := rg.Group("presigned-url")

@@ -2,13 +2,13 @@ package utils
 
 import (
 	"fmt"
-	"time"
 	"github.com/golang-jwt/jwt/v5"
+	"time"
 )
 
 func CreateToken(ttl time.Duration, payload interface{}, secretKey string) (string, error) {
 	// Use the secret key directly instead of decoding a private key
-	key := []byte(secretKey) 
+	key := []byte(secretKey)
 
 	now := time.Now().UTC()
 

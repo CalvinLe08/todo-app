@@ -40,14 +40,13 @@ func (uc *UserController) GetProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
 		"data": gin.H{
-			"id":              dbUser.ID,
-			"name":            dbUser.Name,
-			"email":           dbUser.Email,
-			"age":             dbUser.Age,
+			"id":    dbUser.ID,
+			"name":  dbUser.Name,
+			"email": dbUser.Email,
+			"age":   dbUser.Age,
 		},
 	})
 }
-
 
 func (uc *UserController) UpdateProfile(c *gin.Context) {
 	currentUser := c.MustGet("currentUser").(models.User)
@@ -70,13 +69,13 @@ func (uc *UserController) UpdateProfile(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	// Update
 	if updateInfo.Name != "" {
 		dbUser.Name = updateInfo.Name
 	}
 	if updateInfo.Age > 0 {
-		dbUser.Age = int64(updateInfo.Age)	
+		dbUser.Age = int64(updateInfo.Age)
 	}
 
 	now := time.Now()
@@ -92,12 +91,12 @@ func (uc *UserController) UpdateProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
 		"data": gin.H{
-			"id":              dbUser.ID,
-			"name":            dbUser.Name,
-			"email":           dbUser.Email,
-			"age":             dbUser.Age,
-			"created_at":      dbUser.CreatedAt,
-			"updated_at":      now,
+			"id":         dbUser.ID,
+			"name":       dbUser.Name,
+			"email":      dbUser.Email,
+			"age":        dbUser.Age,
+			"created_at": dbUser.CreatedAt,
+			"updated_at": now,
 		},
 	})
 }

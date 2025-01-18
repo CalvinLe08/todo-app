@@ -17,16 +17,16 @@ import (
 var (
 	server *gin.Engine
 
-	AuthController controllers.AuthController
+	AuthController      controllers.AuthController
 	AuthRouteController routes.AuthRouteController
 
-	ItemController controllers.ItemController
+	ItemController      controllers.ItemController
 	ItemRouteController routes.ItemRouteController
 
-	UserController controllers.UserController
+	UserController      controllers.UserController
 	UserRouteController routes.UserRouteController
 
-	ImageController controllers.ImageController
+	ImageController      controllers.ImageController
 	ImageRouteController routes.ImageRouteController
 )
 
@@ -36,24 +36,24 @@ func init() {
 	if err != nil {
 		log.Fatal("Could not load environment variables", err)
 	}
-	
+
 	// connect to dependencies
 	initializers.ConnectDB(&config)
 	initializers.ConnectRedis(&config)
 	initializers.ConnectMinio(&config)
-	
+
 	// auth
 	AuthController = controllers.NewAuthController(initializers.DB, initializers.RedisClient)
-	AuthRouteController = routes.NewAuthRouteController(AuthController) 
-	
+	AuthRouteController = routes.NewAuthRouteController(AuthController)
+
 	// item
 	ItemController = controllers.NewItemController(initializers.DB)
 	ItemRouteController = routes.NewItemRouteController(ItemController)
-	
+
 	// user
 	UserController = controllers.NewUserController(initializers.DB, initializers.MinioClient)
 	UserRouteController = routes.NewUserRouteController(UserController)
-	
+
 	// image uploader
 	ImageController = controllers.NewImageController(initializers.MinioClient)
 	ImageRouteController = routes.NewImageRouteController(ImageController)
@@ -78,11 +78,10 @@ func main() {
 	})
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-
 	AuthRouteController.AuthRoute(router)
 	ItemRouteController.ItemRoute(router)
 	UserRouteController.UserRoute(router)
 	ImageRouteController.ImageRoute(router)
-	
+
 	log.Fatal(server.Run("localhost:" + config.ServerPort))
 }

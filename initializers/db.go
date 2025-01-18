@@ -13,7 +13,7 @@ var DB *gorm.DB
 func ConnectDB(config *Config) {
 	var err error
 
-	// https://gorm.io/docs/connecting_to_the_database.html#PostgreSQL 
+	// https://gorm.io/docs/connecting_to_the_database.html#PostgreSQL
 	dsn := fmt.Sprintf(`
 		host=%s 
 		user=%s 
@@ -23,12 +23,12 @@ func ConnectDB(config *Config) {
 		sslmode=disable 
 		TimeZone=Asia/Shanghai`,
 		config.DBHost,
-		config.DBUser,	
+		config.DBUser,
 		config.DBPass,
 		config.DBName,
 		config.DBPort,
 	)
-	
+
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {

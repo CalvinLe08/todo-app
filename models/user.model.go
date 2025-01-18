@@ -7,13 +7,13 @@ import (
 )
 
 type User struct {
-	ID           uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	Name         string    `gorm:"type:varchar(255);not null"`
-	Email        string    `gorm:"uniqueIndex;not null"`
-	Age          int64     `json:"age"`
-	Password     string    `gorm:"not null"`
-	CreatedAt    time.Time `gorm:"not null"`
-	UpdatedAt    time.Time `gorm:"not null"`
+	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	Name      string    `gorm:"type:varchar(255);not null"`
+	Email     string    `gorm:"uniqueIndex;not null"`
+	Age       int64     `json:"age"`
+	Password  string    `gorm:"not null"`
+	CreatedAt time.Time `gorm:"not null"`
+	UpdatedAt time.Time `gorm:"not null"`
 }
 
 type RegisterInput struct {
@@ -30,7 +30,6 @@ type SignInInput struct {
 }
 
 type UpdateUserInput struct {
-	Name            string `json:"name"`
-	Age             int    `json:"age"`
+	Name string `json:"name"`
+	Age  int    `json:"age"`
 }
-

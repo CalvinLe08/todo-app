@@ -28,6 +28,7 @@ func NewAuthController(DB *gorm.DB, Redis *redis.Client) AuthController {
 }
 
 // Register
+//
 //	@Summary		Register a new user
 //	@Description	Create a new user account with name, email, and password.
 //	@Tags			Auth
@@ -39,13 +40,12 @@ func (ac *AuthController) Register(c *gin.Context) {
 	var registerInfo *models.RegisterInput
 
 	if err := c.ShouldBindJSON(&registerInfo); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H {
-			"error": "Invalid input",
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Invalid input",
 			"details": fmt.Sprintf("Validation failed: %v", err),
 		})
 		return
 	}
-
 
 	if err := utils.ValidateEmail(registerInfo.Email); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -57,7 +57,7 @@ func (ac *AuthController) Register(c *gin.Context) {
 
 	if registerInfo.Password != registerInfo.PasswordConfirm {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "fail",
+			"status":  "fail",
 			"message": "Passwords do not match",
 		})
 		return
@@ -65,8 +65,8 @@ func (ac *AuthController) Register(c *gin.Context) {
 
 	hashedPassword, err := utils.HashPassword(registerInfo.Password)
 	if err != nil {
-		c.JSON(http.StatusBadGateway, gin.H {
-			"status": "error", 
+		c.JSON(http.StatusBadGateway, gin.H{
+			"status":  "error",
 			"message": err.Error(),
 		})
 		return
@@ -75,11 +75,11 @@ func (ac *AuthController) Register(c *gin.Context) {
 	now := time.Now()
 
 	newUser := &models.User{
-		ID: uuid.New(),
-		Name: registerInfo.Name,
-		Email: registerInfo.Email,
-		Age: registerInfo.Age,
-		Password: hashedPassword,
+		ID:        uuid.New(),
+		Name:      registerInfo.Name,
+		Email:     registerInfo.Email,
+		Age:       registerInfo.Age,
+		Password:  hashedPassword,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
@@ -89,13 +89,13 @@ func (ac *AuthController) Register(c *gin.Context) {
 	if result.Error != nil {
 		if strings.Contains(result.Error.Error(), "duplicate key") {
 			c.JSON(http.StatusConflict, gin.H{
-				"status": "fail", 
+				"status":  "fail",
 				"message": "User already exists",
 			})
 			return
 		}
 		c.JSON(http.StatusBadGateway, gin.H{
-			"status": "error", 
+			"status":  "error",
 			"message": result.Error.Error(),
 		})
 		return
@@ -103,7 +103,7 @@ func (ac *AuthController) Register(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{
 		"status": "success",
-		"data": newUser,
+		"data":   newUser,
 	})
 }
 
@@ -111,8 +111,8 @@ func (ac *AuthController) LogIn(c *gin.Context) {
 	var SignInInput *models.SignInInput
 
 	if err := c.ShouldBindJSON(&SignInInput); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H {		
-			"status": "fail",
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "fail",
 			"message": err.Error(),
 		})
 		return
@@ -121,10 +121,10 @@ func (ac *AuthController) LogIn(c *gin.Context) {
 	// Check db if user existed
 	var user models.User
 
-	result := ac.DB.First(&user, "email = ?", strings.ToLower(SignInInput.Email)) 
+	result := ac.DB.First(&user, "email = ?", strings.ToLower(SignInInput.Email))
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "fail", 
+			"status":  "fail",
 			"message": "Invalid email or password",
 		})
 		return
@@ -132,7 +132,7 @@ func (ac *AuthController) LogIn(c *gin.Context) {
 
 	if err := utils.VerifyPassword(user.Password, SignInInput.Password); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "fail", 
+			"status":  "fail",
 			"message": "Invalid email or password",
 		})
 		return
@@ -141,27 +141,27 @@ func (ac *AuthController) LogIn(c *gin.Context) {
 	config, _ := initializers.LoadConfig(".")
 
 	// Generate tokens and return to users
-	access_token, err := utils.CreateToken(config.AccessTokenExpiresIn, user.ID, config.AccessTokenPrivate) 
+	access_token, err := utils.CreateToken(config.AccessTokenExpiresIn, user.ID, config.AccessTokenPrivate)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "fail",
+			"status":  "fail",
 			"message": err.Error(),
 		})
 		return
 	}
 
-	refresh_token, err := utils.CreateToken(config.RefreshTokenExpiresIn, user.ID, config.AccessTokenPrivate) 
+	refresh_token, err := utils.CreateToken(config.RefreshTokenExpiresIn, user.ID, config.AccessTokenPrivate)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "fail",
+			"status":  "fail",
 			"message": err.Error(),
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": "logged in",
-		"access_token": access_token,
+		"status":        "logged in",
+		"access_token":  access_token,
 		"refresh_token": refresh_token,
 	})
 }
@@ -173,7 +173,7 @@ func (ac *AuthController) Refresh(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "fail",
+			"status":  "fail",
 			"message": "Refresh token is required",
 		})
 		return
@@ -188,14 +188,14 @@ func (ac *AuthController) Refresh(c *gin.Context) {
 	sub, err := utils.ValidateToken(refreshToken, config.RefreshTokenPrivate)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{
-			"status": "fail",
+			"status":  "fail",
 			"message": err.Error(),
 		})
 		return
 	}
 
 	// Check if token is blacklisted
-	isBlacklisted,err := utils.IsTokenBlacklisted(refreshToken, ac.Redis)
+	isBlacklisted, err := utils.IsTokenBlacklisted(refreshToken, ac.Redis)
 	if isBlacklisted {
 		c.JSON(http.StatusUnauthorized, gin.H{"status": "fail", "message": "Invalid token, please log in again"})
 		return
@@ -205,7 +205,7 @@ func (ac *AuthController) Refresh(c *gin.Context) {
 	var user models.User
 	if result := ac.DB.First(&user, "id = ?", sub); result.Error != nil {
 		c.JSON(http.StatusForbidden, gin.H{
-			"status": "fail",
+			"status":  "fail",
 			"message": "User no longer exists",
 		})
 		return
@@ -256,7 +256,7 @@ func (ac *AuthController) LogOut(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	// Check if user existed
 	currentUser := user.(models.User)
 	var dbUser models.User
@@ -268,7 +268,7 @@ func (ac *AuthController) LogOut(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	// Blacklist
 	err := utils.BlacklistToken(requestBody.RefreshToken, initializers.RedisClient, time.Hour*24)
 	if err != nil {
